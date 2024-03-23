@@ -70,15 +70,15 @@ def main():
             frame = cv.flip(frame, 1).swapaxes(1, 0)
             pygame.surfarray.blit_array(screen, frame)
 
-            text = pygame.font.SysFont("Helvetica Bold.ttf", 50).render(f'Welcome to the game', True, (99, 245, 255))
+            text = pygame.font.SysFont("oldenglishtext", 50).render(f'Welcome to the game', True, (6, 23, 64))
             tr = text.get_rect()
             tr.center = (320, 120)
             screen.blit(text, tr)
-            text = pygame.font.SysFont("Helvetica Bold.ttf", 50).render(f'Press 1 to play', True, (99, 245, 255))
+            text = pygame.font.SysFont("oldenglishtext", 50).render(f'Press 1 to play', True, (42, 7, 82))
             tr = text.get_rect()
             tr.center = (320, 250)
             screen.blit(text, tr)
-            text = pygame.font.SysFont("Helvetica Bold.ttf", 50).render(f'Press 2 to quit', True, (99, 245, 255))
+            text = pygame.font.SysFont("oldenglishtext", 50).render(f'Press 2 to quit', True, (42, 7, 82))
             tr = text.get_rect()
             tr.center = (320, 350)
             screen.blit(text, tr)
@@ -100,7 +100,6 @@ def main():
                         
 def playGame():
     
- 
     # Initialize required elements/environment
     VID_CAP = cv.VideoCapture(0)
     window_size = (VID_CAP.get(cv.CAP_PROP_FRAME_WIDTH), VID_CAP.get(cv.CAP_PROP_FRAME_HEIGHT)) # width by height
@@ -108,11 +107,11 @@ def playGame():
     print(window_size)
     # present and pipe init
     present_img = pygame.image.load("present.png")
-    present_img = pygame.transform.scale(present_img, (present_img.get_width() / 5, present_img.get_height() / 5))
+    present_img = pygame.transform.scale(present_img, (present_img.get_width() / 3, present_img.get_height() / 3))
     present_frame = present_img.get_rect()
     present_frame.center = (window_size[0] // 6, window_size[1] // 2)
     pipe_frames = deque()
-    pipe_img = pygame.image.load("pipe.png")
+    pipe_img = pygame.image.load("cloud2.png")
     pipe_img = pygame.transform.rotate(pipe_img, 90)
 
     pipe_starting_template = pipe_img.get_rect()
@@ -170,7 +169,7 @@ def playGame():
 
                 # Check if game is running
                 if not game_is_running:
-                    text = pygame.font.SysFont("Helvetica Bold.ttf", 64).render('Game over!', True, (99, 245, 255))
+                    text = pygame.font.SysFont("oldenglishtext", 64).render('Game over!', True, (6, 23, 64))
                     tr = text.get_rect()
                     tr.center = (window_size[0]/2, window_size[1]/2)
                     screen.blit(text, tr)
@@ -239,11 +238,11 @@ def playGame():
                     screen.blit(pygame.transform.flip(pipe_img, 0, 1), pf[0])
                 if checker: didUpdateScore = False
                 # Stage, score text
-                text = pygame.font.SysFont("Helvetica Bold.ttf", 50).render(f'Stage {stage}', True, (99, 245, 255))
+                text = pygame.font.SysFont("oldenglishtext", 30).render(f'Stage {stage}', True, (42, 7, 82))
                 tr = text.get_rect()
                 tr.center = (100, 50)
                 screen.blit(text, tr)
-                text = pygame.font.SysFont("Helvetica Bold.ttf", 50).render(f'Score: {score}', True, (99, 245, 255))
+                text = pygame.font.SysFont("oldenglishtext", 30).render(f'Score: {score}', True, (42, 7, 82))
                 tr = text.get_rect()
                 tr.center = (100, 100)
                 screen.blit(text, tr)
