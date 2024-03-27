@@ -19,17 +19,16 @@ def main():
         window_size = (VID_CAP.get(cv.CAP_PROP_FRAME_WIDTH), VID_CAP.get(cv.CAP_PROP_FRAME_HEIGHT)) # width by height
         screen = pygame.display.set_mode(window_size)
 
-    # Get frame
         ret, frame = VID_CAP.read()
-        
-        # Clear screen
+   
         screen.fill((125, 220, 232))
-        # Hand landmarker
+
+        # Init hand landmarker
         frame.flags.writeable = False
         frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
         results = hands.process(frame)
         frame.flags.writeable = True
-        # Draw mesh
+       
         if results.multi_hand_landmarks and len(results.multi_hand_landmarks) > 0:
             for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
@@ -46,7 +45,8 @@ def main():
 
         while True:
         
-            # Get frame
+            # MAIN MENU
+
             ret, frame = VID_CAP.read()
             if not ret:
                         print("Empty frame, continuing...")
@@ -57,7 +57,8 @@ def main():
             frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
             results = hands.process(frame)
             frame.flags.writeable = True
-            # Draw mesh
+
+            # Init hand landmarker again 
             if results.multi_hand_landmarks and len(results.multi_hand_landmarks) > 0:
                 for hand_landmarks in results.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(
@@ -70,15 +71,15 @@ def main():
             frame = cv.flip(frame, 1).swapaxes(1, 0)
             pygame.surfarray.blit_array(screen, frame)
 
-            text = pygame.font.SysFont("oldenglishtext", 50).render(f'Welcome to the game', True, (6, 23, 64))
+            text = pygame.font.SysFont("modernno20", 50).render(f'Chute Drop', True, (255, 215, 255))
             tr = text.get_rect()
             tr.center = (320, 120)
             screen.blit(text, tr)
-            text = pygame.font.SysFont("oldenglishtext", 50).render(f'Press 1 to play', True, (42, 7, 82))
+            text = pygame.font.SysFont("modernno20", 50).render(f'Press 1 to play', True, (205, 255, 255))
             tr = text.get_rect()
             tr.center = (320, 250)
             screen.blit(text, tr)
-            text = pygame.font.SysFont("oldenglishtext", 50).render(f'Press 2 to quit', True, (42, 7, 82))
+            text = pygame.font.SysFont("modernno20", 50).render(f'Press 2 to quit', True, (205, 255, 255))
             tr = text.get_rect()
             tr.center = (320, 350)
             screen.blit(text, tr)
@@ -100,30 +101,32 @@ def main():
                         
 def playGame():
     
-    # Initialize required elements/environment
+    # GAME LOOP
+    # Open camera and window
     VID_CAP = cv.VideoCapture(0)
     window_size = (VID_CAP.get(cv.CAP_PROP_FRAME_WIDTH), VID_CAP.get(cv.CAP_PROP_FRAME_HEIGHT)) # width by height
     screen = pygame.display.set_mode(window_size)
     print(window_size)
-    # present and pipe init
+
+    # Load in assets
     present_img = pygame.image.load("present.png")
     present_img = pygame.transform.scale(present_img, (present_img.get_width() / 3, present_img.get_height() / 3))
     present_frame = present_img.get_rect()
     present_frame.center = (window_size[0] // 6, window_size[1] // 2)
-    pipe_frames = deque()
-    pipe_img = pygame.image.load("cloud2.png")
-    pipe_img = pygame.transform.rotate(pipe_img, 90)
+    cloud_frames = deque()
+    cloud_img = pygame.image.load("cloud2.png")
+    cloud_img = pygame.transform.rotate(cloud_img, 90)
 
-    pipe_starting_template = pipe_img.get_rect()
-    space_between_pipes = 250
+    cloud_starting_template = cloud_img.get_rect()
+    space_between_clouds = 250
 
-    # Game loop
+    # Start game
     game_clock = time.time()
     stage = 1
-    pipeSpawnTimer = 0
-    time_between_pipe_spawn = 40
-    dist_between_pipes = 500
-    pipe_velocity = lambda: (dist_between_pipes / time_between_pipe_spawn) / 2
+    cloudSpawnTimer = 0
+    time_between_cloud_spawn = 40
+    dist_between_clouds = 500
+    cloud_velocity = lambda: (dist_between_clouds / time_between_cloud_spawn) / 2
     level = 0
     score = 0
     didUpdateScore = False
@@ -135,19 +138,18 @@ def playGame():
     min_detection_confidence = 0.5,
     min_tracking_confidence = 0.5) as hands:
         
-        # Get frame
+      
         ret, frame = VID_CAP.read()
-        
-        # Clear screen
+
         screen.fill((125, 220, 232))
-        # Hand landmarker
+        # Init hand landmarker
         frame.flags.writeable = False
         frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
         results = hands.process(frame)
         frame.flags.writeable = True
-        # Draw mesh
+        # Draw hand
         if results.multi_hand_landmarks and len(results.multi_hand_landmarks) > 0:
-            # 8 = Tip of index finger
+            # Landmark 8 = Tip of index finger
             for hand_landmarks in results.multi_hand_landmarks:
                 mp_drawing.draw_landmarks(
                 frame,
@@ -167,9 +169,9 @@ def playGame():
         
         while True:
 
-                # Check if game is running
+                # When game is over
                 if not game_is_running:
-                    text = pygame.font.SysFont("oldenglishtext", 64).render('Game over!', True, (6, 23, 64))
+                    text = pygame.font.SysFont("modernno20", 64).render('Game over!', True, (255, 205, 255))
                     tr = text.get_rect()
                     tr.center = (window_size[0]/2, window_size[1]/2)
                     screen.blit(text, tr)
@@ -178,7 +180,7 @@ def playGame():
                     VID_CAP.release()
                     main()
                     
-                # Check if user quit window
+                # Check if user has quit
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         VID_CAP.release()
@@ -186,13 +188,14 @@ def playGame():
                         pygame.quit()
                         sys.exit()
 
-                # Get frame
+             
                 ret, frame = VID_CAP.read()
                 if not ret:
                     print("Empty frame, continuing...")
                     continue
                 # Clear screen
                 screen.fill((125, 220, 232))
+
                 # Hand landmarker
                 frame.flags.writeable = False
                 frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
@@ -216,54 +219,54 @@ def playGame():
                 # Mirror frame, swap axes because opencv != pygame
                 frame = cv.flip(frame, 1).swapaxes(1, 0)
         
-                # Update pipe positions
-                for pf in pipe_frames:
-                    pf[0].y -= pipe_velocity()
-                    pf[1].y -= pipe_velocity()
-                if len(pipe_frames) > 0 and pipe_frames[0][0].bottom < 0:
-                    pipe_frames.popleft()
+                # Update cloud positions
+                for pf in cloud_frames:
+                    pf[0].y -= cloud_velocity()
+                    pf[1].y -= cloud_velocity()
+                if len(cloud_frames) > 0 and cloud_frames[0][0].bottom < 0:
+                    cloud_frames.popleft()
                 # Update screen
                 pygame.surfarray.blit_array(screen, frame)
                 screen.blit(present_img, present_frame)
                 checker = True
-                for pf in pipe_frames:
-                    # Check if present went through to update score
+                for pf in cloud_frames:
+                    # Check if present went through the clouds to update score
                     if pf[0].top <= present_frame.y <= pf[0].bottom:
                         checker = False
                         if not didUpdateScore:
                             score += 1
                             didUpdateScore = True
                     # Update screen
-                    screen.blit(pipe_img, pf[1])
-                    screen.blit(pygame.transform.flip(pipe_img, 0, 1), pf[0])
+                    screen.blit(cloud_img, pf[1])
+                    screen.blit(pygame.transform.flip(cloud_img, 0, 1), pf[0])
                 if checker: didUpdateScore = False
                 # Stage, score text
-                text = pygame.font.SysFont("oldenglishtext", 30).render(f'Stage {stage}', True, (42, 7, 82))
+                text = pygame.font.SysFont("modernno20", 30).render(f'Stage {stage}', True, (205, 255, 255))
                 tr = text.get_rect()
                 tr.center = (100, 50)
                 screen.blit(text, tr)
-                text = pygame.font.SysFont("oldenglishtext", 30).render(f'Score: {score}', True, (42, 7, 82))
+                text = pygame.font.SysFont("modernno20", 30).render(f'Score: {score}', True, (205, 255, 255))
                 tr = text.get_rect()
                 tr.center = (100, 100)
                 screen.blit(text, tr)
                 # Update screen
                 pygame.display.flip()
-                # Check if present is touching a pipe
-                if any([present_frame.colliderect(pf[0]) or present_frame.colliderect(pf[1]) for pf in pipe_frames]):
+                # Check if present is touching a cloud
+                if any([present_frame.colliderect(pf[0]) or present_frame.colliderect(pf[1]) for pf in cloud_frames]):
                     game_is_running = False
-                # Time to add new pipes
-                if pipeSpawnTimer == 0:
-                    left = pipe_starting_template.copy()
-                    left.x, left.y = random.randint(120 - 1000, window_size[0] - 120 - space_between_pipes - 900), window_size[1]
-                    right = pipe_starting_template.copy()
-                    right.x, right.y = left.x + 1000 + space_between_pipes, window_size[1], 
-                    pipe_frames.append([left, right])
-                # Update pipe spawn timer - make it cyclical
-                pipeSpawnTimer += 0.7
-                if pipeSpawnTimer >= time_between_pipe_spawn: pipeSpawnTimer = 0
-                # Update stage
+                # Add new cloud
+                if cloudSpawnTimer == 0:
+                    left = cloud_starting_template.copy()
+                    left.x, left.y = random.randint(120 - 1000, window_size[0] - 120 - space_between_clouds - 900), window_size[1]
+                    right = cloud_starting_template.copy()
+                    right.x, right.y = left.x + 1000 + space_between_clouds, window_size[1], 
+                    cloud_frames.append([left, right])
+                # Update cloud spawn timer 
+                cloudSpawnTimer += 0.7
+                if cloudSpawnTimer >= time_between_cloud_spawn: cloudSpawnTimer = 0
+                # Make the game harder
                 if time.time() - game_clock >= 10:
-                    time_between_pipe_spawn *= 4 / 6
+                    time_between_cloud_spawn *= 4 / 6
                     stage += 1
                     game_clock = time.time()
 
