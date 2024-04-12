@@ -18,6 +18,7 @@ def main():
         VID_CAP = cv.VideoCapture(0)
         window_size = (VID_CAP.get(cv.CAP_PROP_FRAME_WIDTH), VID_CAP.get(cv.CAP_PROP_FRAME_HEIGHT)) # width by height
         screen = pygame.display.set_mode(window_size)
+        pygame.display.set_caption('Chute Drop')
 
         ret, frame = VID_CAP.read()
    
